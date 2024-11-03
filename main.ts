@@ -1,176 +1,202 @@
 // Interfacce
 
-export interface IProdotto {
-    tipo: 'costume da bagno' | 'pareo' | 'cappello';
+export interface IProduct {
+    type: "swimsuit" | "pareo" | "cap";
     id: string;
-    taglia: string;
-    colore: string;
-    stato: 'disponibile' | 'esaurito';
-    assegnaCliente(cliente: ICliente): void;
-}
-
-export interface ICliente {
-    nome: string;
-    cognome: string;
+    size: string;
+    color: string;
+    state: "available" | "spent";
+    assignCustomer(customer: ICostumer): void;
+  }
+  
+  export interface ICostumer {
+    name: string;
+    surname: string;
     email: string;
-    metodoPagamentoPreferito: string;
-    ordinaProdotto(prodotto: IProdotto): void;
-}
-
-export interface IProcessoProduzione {
-    nome: string;
-    descrizione: string;
-    prodottiInProduzione: IProdotto[];
-    aggiungiProdotto(prodotto: IProdotto): void;
-}
-
-// Classi
-
-class Prodotto implements IProdotto {
+    paymentMethod: string;
+    orderProduct(product: IProduct): void;
+  }
+  
+  export interface IProduction {
+    name: string;
+    description: string;
+    productsInProduction: IProduct[];
+    addProduct(product: IProduct): void;
+  }
+  
+  // Classi
+  
+  class Product implements IProduct {
     constructor(
-        public tipo: 'costume da bagno' | 'pareo' | 'cappello',
-        public id: string,
-        public taglia: string,
-        public colore: string,
-        public stato: 'disponibile' | 'esaurito' = 'disponibile'
+      public type: "swimsuit" | "pareo" | "cap",
+      public id: string,
+      public size: string,
+      public color: string,
+      public state: "available" | "spent" = "available"
     ) {}
-
-    assegnaCliente(cliente: ICliente): void {
-        console.log(`Prodotto ${this.id} assegnato a ${cliente.nome} ${cliente.cognome}`);
-        this.stato = 'esaurito';
+  
+    assignCustomer(customer: ICostumer): void {
+      console.log(
+        `Product ${this.id} assigned to ${customer.name} ${customer.surname}`
+      );
+      this.state = "spent";
     }
-}
-
-class Cliente implements ICliente {
+  }
+  
+  class Costumer implements ICostumer {
     constructor(
-        public nome: string,
-        public cognome: string,
-        public email: string,
-        public metodoPagamentoPreferito: string
+      public name: string,
+      public surname: string,
+      public email: string,
+      public paymentMethod: string
     ) {}
-
-    ordinaProdotto(prodotto: IProdotto): void {
-        if (prodotto.stato === 'disponibile') {
-            console.log(`${this.nome} ${this.cognome} ha ordinato il prodotto ${prodotto.id}`);
-            prodotto.assegnaCliente(this);
-        } else {
-            console.log(`Il prodotto ${prodotto.id} non è disponibile`);
-        }
+  
+    orderProduct(product: IProduct): void {
+      if (product.state === "available") {
+        console.log(
+          `${this.name} ${this.surname} ordered the product ${product.id}`
+        );
+        product.assignCustomer(this);
+      } else {
+        console.log(`Product ${product.id} isn't available`);
+      }
     }
-}
-
-class ProcessoProduzione implements IProcessoProduzione {
-    prodottiInProduzione: IProdotto[] = [];
-
-    constructor(
-        public nome: string,
-        public descrizione: string
-    ) {}
-
-    aggiungiProdotto(prodotto: IProdotto): void {
-        this.prodottiInProduzione.push(prodotto);
-        console.log(`Prodotto ${prodotto.id} aggiunto al processo ${this.nome}`);
+  }
+  
+  class ProductionProcess implements IProduction {
+    productsInProduction: IProduct[] = [];
+  
+    constructor(public name: string, public description: string) {}
+  
+    addProduct(product: IProduct): void {
+      this.productsInProduction.push(product);
+      console.log(`Product ${product.id} added to the process ${this.name}`);
     }
-}
-
-// Istanziazione e test
-
-// Creazione prodotti
-const costume1 = new Prodotto('costume da bagno', 'CB001', 'M', 'Blu');
-const pareo1 = new Prodotto('pareo', 'P001', 'Unica', 'Verde');
-const cappello1 = new Prodotto('cappello', 'CAP001', 'L', 'Bianco');
-
-// Creazione clienti
-const cliente1 = new Cliente('Mario', 'Rossi', 'mario.rossi@email.com', 'Carta di credito');
-const cliente2 = new Cliente('Giulia', 'Bianchi', 'giulia.bianchi@email.com', 'PayPal');
-
-// Creazione processo di produzione
-const processoPlaticaRiciclata = new ProcessoProduzione(
-    'Processo Plastica Riciclata',
-    'Processo di trasformazione della plastica riciclata in tessuti per beachwear'
-);
-
-// Aggiunta prodotti al processo di produzione
-processoPlaticaRiciclata.aggiungiProdotto(costume1);
-processoPlaticaRiciclata.aggiungiProdotto(pareo1);
-processoPlaticaRiciclata.aggiungiProdotto(cappello1);
-
-
-// Test ordinazione prodotti
-cliente1.ordinaProdotto(costume1);
-cliente2.ordinaProdotto(pareo1);
-
-// Tentativo di ordinare un prodotto già esaurito
-cliente2.ordinaProdotto(costume1);
-
-// Aggiunta di un nuovo prodotto al processo di produzione
-const costume2 = new Prodotto('costume da bagno', 'CB002', 'S', 'Rosso');
-processoPlaticaRiciclata.aggiungiProdotto(costume2);
-
-// Visualizzazione dei prodotti in produzione
-console.log("Prodotti in produzione:");
-processoPlaticaRiciclata.prodottiInProduzione.forEach(prodotto => {
-    console.log(`- ${prodotto.tipo} (ID: ${prodotto.id}), Colore: ${prodotto.colore}, Taglia: ${prodotto.taglia}, Stato: ${prodotto.stato}`);
-});
-
-// Funzione per visualizzare lo stato del magazzino
-function visualizzaStatoMagazzino(prodotti: IProdotto[]) {
-    console.log("\nStato del magazzino:");
-    prodotti.forEach(prodotto => {
-        console.log(`- ${prodotto.tipo} (ID: ${prodotto.id}), Stato: ${prodotto.stato}`);
+  }
+  
+  // Test
+  
+  // Creation product
+  const swimsuit1 = new Product("swimsuit", "CB001", "M", "Blue");
+  const pareo1 = new Product("pareo", "P001", "Unique", "Green");
+  const cap1 = new Product("cap", "CAP001", "L", "White");
+  
+  // Creation costumer
+  const costumer1 = new Costumer(
+    "Mario",
+    "Rossi",
+    "mario.rossi@email.com",
+    "Credit Card"
+  );
+  const costumer2 = new Costumer(
+    "Giulia",
+    "Bianchi",
+    "giulia.bianchi@email.com",
+    "PayPal"
+  );
+  
+  // Creation Production Process
+  const recycledPlasticProcess = new ProductionProcess(
+    "Recycled Plastic process",
+    "Process of transforming recycled plastic into beachwear fabrics"
+  );
+  
+  // Add products to production Process
+  recycledPlasticProcess.addProduct(swimsuit1);
+  recycledPlasticProcess.addProduct(pareo1);
+  recycledPlasticProcess.addProduct(cap1);
+  
+  // Test order products
+  costumer1.orderProduct(swimsuit1);
+  costumer2.orderProduct(pareo1);
+  
+  // Attempting to order a product that is already out of stock
+  costumer2.orderProduct(swimsuit1);
+  
+  // Adding a new product to the manufacturing process
+  const swimsuit2 = new Product("swimsuit", "CB002", "S", "Red");
+  recycledPlasticProcess.addProduct(swimsuit2);
+  
+  // Viewing products in production
+  console.log("Products in production:");
+  recycledPlasticProcess.productsInProduction.forEach((product) => {
+    console.log(
+      `- ${product.type} (ID: ${product.id}), Color: ${product.color}, Size: ${product.size}, State: ${product.state}`
+    );
+  });
+  
+  // Function to display the warehouse status
+  function viewWarehouseStatus(products: IProduct[]) {
+    console.log("\nWarehouse status:");
+    products.forEach((product) => {
+      console.log(
+        `- ${product.type} (ID: ${product.id}), State: ${product.state}`
+      );
     });
-}
-
-// Visualizzazione dello stato del magazzino
-visualizzaStatoMagazzino([costume1, pareo1, cappello1, costume2]);
-
-// Funzione per calcolare le statistiche di vendita
-function calcolaStatisticheVendita(prodotti: IProdotto[]) {
-    const totale = prodotti.length;
-    const venduti = prodotti.filter(p => p.stato === 'esaurito').length;
-    const disponibili = totale - venduti;
-
-    console.log("\nStatistiche di vendita:");
-    console.log(`Totale prodotti: ${totale}`);
-    console.log(`Prodotti venduti: ${venduti}`);
-    console.log(`Prodotti disponibili: ${disponibili}`);
-    console.log(`Percentuale venduta: ${(venduti / totale * 100).toFixed(2)}%`);
-}
-
-// Calcolo e visualizzazione delle statistiche di vendita
-calcolaStatisticheVendita([costume1, pareo1, cappello1, costume2]);
-
-// Simulazione di un nuovo ordine
-const cliente3 = new Cliente('Laura', 'Verdi', 'laura.verdi@email.com', 'Bonifico');
-cliente3.ordinaProdotto(cappello1);
-
-// Aggiornamento delle statistiche dopo il nuovo ordine
-visualizzaStatoMagazzino([costume1, pareo1, cappello1, costume2]);
-calcolaStatisticheVendita([costume1, pareo1, cappello1, costume2]);
-
-// Funzione per simulare la produzione di nuovi articoli
-function produciNuoviArticoli(processo: IProcessoProduzione, quantita: number) {
-    console.log(`\nProduzione di ${quantita} nuovi articoli:`);
-    for (let i = 0; i < quantita; i++) {
-        const tipi: ('costume da bagno' | 'pareo' | 'cappello')[] = ['costume da bagno', 'pareo', 'cappello'];
-        const tipo = tipi[Math.floor(Math.random() * tipi.length)];
-        const id = `${tipo.charAt(0).toUpperCase()}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
-        const colori = ['Blu', 'Verde', 'Rosso', 'Giallo', 'Nero', 'Bianco'];
-        const colore = colori[Math.floor(Math.random() * colori.length)];
-        const taglie = ['XS', 'S', 'M', 'L', 'XL', 'Unica'];
-        const taglia = taglie[Math .floor(Math.random() * taglie.length)];
-
-        const nuovoProdotto = new Prodotto(tipo, id, taglia, colore);
-        processo.aggiungiProdotto(nuovoProdotto);
-        console.log(`- ${nuovoProdotto.tipo} (ID: ${nuovoProdotto.id}), Colore: ${nuovoProdotto.colore}, Taglia: ${nuovoProdotto.taglia}`);
+  }
+  
+  // View the warehouse status
+  viewWarehouseStatus([swimsuit1, pareo1, cap1, swimsuit2]);
+  
+  // Function to calculate sales statistics
+  function calculateSalesStatistics(products: IProduct[]) {
+    const total = products.length;
+    const sales = products.filter((p) => p.state === "spent").length;
+    const available = total - sales;
+  
+    console.log("\nWarehouse status:");
+    console.log(`Total products: ${total}`);
+    console.log(`Products sales: ${sales}`);
+    console.log(`Products available: ${available}`);
+    console.log(`Percentage sold: ${((sales / total) * 100).toFixed(2)}%`);
+  }
+  
+  // Calculation and display of sales statistics
+  calculateSalesStatistics([swimsuit1, pareo1, cap1, swimsuit2]);
+  
+  // Simulation of a new order
+  const costumer3 = new Costumer(
+    "Laura",
+    "Verdi",
+    "laura.verdi@email.com",
+    "Wire transfer"
+  );
+  costumer3.orderProduct(cap1);
+  
+  // Update statistics after new order
+  viewWarehouseStatus([swimsuit1, pareo1, cap1, swimsuit2]);
+  calculateSalesStatistics([swimsuit1, pareo1, cap1, swimsuit2]);
+  
+  // Function to simulate the production of new items
+  function produceNewArticles(process: IProduction, quantity: number) {
+    console.log(`\nProduction of ${quantity} new items:`);
+    for (let i = 0; i < quantity; i++) {
+      const types: ("swimsuit" | "pareo" | "cap")[] = ["swimsuit", "pareo", "cap"];
+      const type = types[Math.floor(Math.random() * types.length)];
+      const id = `${type.charAt(0).toUpperCase()}${String(
+        Math.floor(Math.random() * 1000)
+      ).padStart(3, "0")}`;
+      const colors = ["Blue", "Green", "Red", "Yellow", "Black", "White"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const sizes = ["XS", "S", "M", "L", "XL", "Unique"];
+      const size = sizes[Math.floor(Math.random() * sizes.length)];
+  
+      const newProduct = new Product(type, id, size, color);
+      process.addProduct(newProduct);
+      console.log(
+        `- ${newProduct.type} (ID: ${newProduct.id}), Color: ${newProduct.color}, Size: ${newProduct.size}`
+      );
     }
-}
-
-// Simulazione della produzione di 5 nuovi articoli
-produciNuoviArticoli(processoPlaticaRiciclata, 5);
-
-// Visualizzazione dei prodotti in produzione dopo la produzione di nuovi articoli
-console.log("\nProdotti in produzione:");
-processoPlaticaRiciclata.prodottiInProduzione.forEach(prodotto => {
-    console.log(`- ${prodotto.tipo} (ID: ${prodotto.id}), Colore: ${prodotto.colore}, Taglia: ${prodotto.taglia}, Stato: ${prodotto.stato}`);
-});
+  }
+  
+  // Simulation of the production of 5 new items
+  produceNewArticles(recycledPlasticProcess, 5);
+  
+  // Viewing products in production after the production of new items
+  console.log("\nProducts in production:");
+  recycledPlasticProcess.productsInProduction.forEach((product) => {
+    console.log(
+      `- ${product.type} (ID: ${product.id}), Color: ${product.color}, Size: ${product.size}, State: ${product.state}`
+    );
+  });
+  
